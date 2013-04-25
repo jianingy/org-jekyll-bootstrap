@@ -1,0 +1,4 @@
+source/
+pub/
+packages/
+*.elc
