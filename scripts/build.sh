@@ -6,10 +6,7 @@
 
 root="$(readlink -e $(dirname $0)/..)"
 
-if [ ! -x $root/gem/bin/jekyll ]; then
-    echo INSTALL: Jekyll
-    . $root/scripts/activate-local-gem.sh
-fi
+. $root/scripts/activate-local-gem.sh
 
 mkdir -pv source
 soruce_ready=0

@@ -6,7 +6,10 @@
 
 root="$(readlink -e $(dirname $0)/..)"
 
-gem install --no-user-install -i "$root/gem" jekyll
+if [ ! -x $root/gem/bin/jekyll ]; then
+    echo INSTALL: jekyll
+    gem install --no-user-install --no-rdoc --no-ri --install-dir "$root/gem" jekyll
+fi
 
-GEM_PATH=$root/gem
-PATH="$root/gem/bin:$PATH"
+export GEM_HOME=$root/gem
+export PATH="$root/gem/bin:$PATH"
