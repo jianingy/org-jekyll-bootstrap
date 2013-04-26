@@ -1,3 +1,6 @@
 [submodule "lisp/el-get"]
 	path = lisp/el-get
 	url = git://github.com/dimitri/el-get.git
+[submodule "lisp/org-jekyll"]
+	path = lisp/org-jekyll
+	url = git://github.com/jianingy/org-jekyll
