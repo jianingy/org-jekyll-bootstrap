@@ -32,7 +32,7 @@ while read site source; do
     if [[ "x$source_ready" == "x1" ]]; then
         echo GENERATING: $site
 	lisp="(progn (add-new-blog \"$site\") (org-jekyll-export-project \"$site\"))"
-	/usr/local/bin/emacs -batch -q -l lisp/publish.el --eval "$lisp"
+	emacs -batch -q -l lisp/publish.el --eval "$lisp"
 	pushd site/$site &>/dev/null
 	jekyll --no-server --no-auto $pub_directory/$site/wwwroot
 	popd &>/dev/null
