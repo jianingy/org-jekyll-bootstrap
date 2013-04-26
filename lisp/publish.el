@@ -1,10 +1,11 @@
 (setq debug-on-error t)
-(setq base-dir "/opt/oj-auto")
+(setq base-dir (getenv "PWD"))
 (message (concat "current base directory:" base-dir))
 (add-to-list 'load-path (concat base-dir "/lisp/el-get"))
 (add-to-list 'load-path (concat base-dir "/lisp/org-jekyll"))
 ;(princ load-path)
 (setq el-get-dir (concat base-dir "/packages"))
+(make-directory el-get-dir t)
 (require 'el-get)
 
 (setq required-packages (append
