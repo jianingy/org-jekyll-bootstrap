@@ -4,15 +4,16 @@
 # created at : 2013-04-24 11:18:47
 # author     : Jianing Yang <jianingy.yang AT gmail DOT com>
 
+root="$(readlink -e $(dirname $0)/..)"
+
+if [ ! -x $root/gem/bin/jekyll ]; then
+    . $root/scripts/activate-local-gem.sh
+fi
 
 mkdir -pv source
-export PATH=$PWD/gem/bin:$PATH
-export GEM_PATH=$PWD/gem:$GEM_HOME
-#echo PATH=$PATH GEM_PATH=$GEM_PATH
 soruce_ready=0
-pub_directory="/var/www/html/"
 
-while read site source; do
+while read site source dest; do
     echo BUILDING: $site
     if [[ -d source/$site ]]; then
         echo PULLING: $source
@@ -34,7 +35,7 @@ while read site source; do
 	lisp="(progn (add-new-blog \"$site\") (org-jekyll-export-project \"$site\"))"
 	emacs -batch -q -l lisp/publish.el --eval "$lisp"
 	pushd site/$site &>/dev/null
-	jekyll --no-server --no-auto $pub_directory/$site/wwwroot
+	jekyll --no-server --no-auto $dest
 	popd &>/dev/null
     fi
 done < ./manifest
