@@ -32,7 +32,7 @@ while read site source dest; do
 
     if [[ "x$source_ready" == "x1" ]]; then
         echo PURGING: $site
-        rm $site/_posts/*
+        rm -v site/$site/_posts/*
         echo GENERATING: $site
 	lisp="(progn (add-new-blog \"$site\") (org-jekyll-export-project \"$site\")(kill-emacs 0))"
 	/usr/bin/xvfb-run emacs -q -l lisp/publish.el --eval "$lisp"
