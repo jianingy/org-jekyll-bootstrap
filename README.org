@@ -1,5 +1,95 @@
+This is an automation which does the following things:
+
+- clone your blog repository from github
+- generate html from your org-mode files
+- publish html by jekyll
+
+Let's start to setup this automation step by step,
+
 * Basic Usage
+** Clone the code
 
 #+BEGIN_SRC sh
-scripts/build
+git clone https://github.com/jianingy/org-jekyll-bootstrap.git
+cd org-jekyll-bootstrap
+git submodule init
+git submodule update
+#+END_SRC
+
+** Start a new site
+
+Clone a [[http://jekyllbootstrap.com/][jekyll-bootstrap]] into the =site= directory and name it with
+your domain. e.g,
+
+#+BEGIN_SRC sh
+cd site
+git clone https://github.com/plusjade/jekyll-bootstrap.git blog.jianingy.com
+#+END_SRC
+
+do some basic configurations according to jekyll-bootstrap's document.
+
+** Connect things together
+
+Create a file named =manifest= contains the following information,
+
+- your site domain
+- the repository address of your blog.
+- the path where generated htmls will be copied to
+
+For example,
+
+#+BEGIN_EXAMPLE
+b.jianingy.com http://github.com/jianingy/blog /var/www/html/blog.jianingy.com/wwwroot
+#+END_EXAMPLE
+
+** Let's rock
+
+When all of above steps done, run =scripts/build.sh=. This scripts
+will download necessary emacs modules and ruby gems for you and then
+generate your blog automatically.
+
+#+BEGIN_SRC sh
+scripts/build.sh
+#+END_SRC
+
+
+* More Steps
+** One more step: Git Hook
+
+Though =org-jekyll-bootstrap= can do all that boring things for us,
+We still have to run it manually. To make this last step
+automatically, we can take the advantage of Git Hook.
+
+We need to write a simple web service first. That service should call
+=scripts/build.sh= when itself be called via HTTP request. Let's see
+a PHP example,
+
+#+BEGIN_SRC php
+<?php
+chdir("/opt/org-jekyll-bootstrap");
+system("scripts/build.sh");
+#+END_SRC
+
+
+Then, add a WebHook to your github repository,
+
+[[http://i.imgur.com/ZZiJbf1.png]]
+
+From now on, whenever you push commits to your repository, your site
+will be generated automatically.
+
+** Htmlize Bug
+
+For some reason I don't know, =htmlize= cannot work in batch mode.
+That means if you run emacs in batch mode, you won't have those fancy
+highlighted source codes. Of course, you may find many ways to
+overcome this issue such as [[http://alexgorbatchev.com/SyntaxHighlighter/][SyntaxHighlighter]] or [[http://pygments.org/][Pygment]]. But, My
+solution is to run emacs in X window mode. It turns out that it
+doesn't need to actually install and start a real X server that
+consume resources. I run emacs within Xvfb, a dumb X server. It makes
+X apps feel like they are in graphic mode without real graphical
+output. Here is an example of starting emacs using Xvfb,
+
+#+BEGIN_SRC sh
+/usr/bin/xvfb-run emacs -q -l lisp/publish.el --eval "$lisp"
 #+END_SRC
