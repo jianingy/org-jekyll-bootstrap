@@ -1,5 +1,5 @@
 (setq debug-on-error t)
-(setq base-dir (getenv "PWD"))
+(setq base-dir (or (getenv "PWD") "."))
 (message (concat "current base directory:" base-dir))
 (add-to-list 'load-path (concat base-dir "/lisp/el-get"))
 (add-to-list 'load-path (concat base-dir "/lisp/org-jekyll"))
@@ -9,7 +9,7 @@
 (require 'el-get)
 
 (setq required-packages (append
-                         '(tomorrow-theme org-mode color-theme)
+                         '(tomorrow-theme org-mode color-theme htmlize)
                          (mapcar 'el-get-source-name el-get-sources)))
 
 (el-get 'sync required-packages)
@@ -24,8 +24,9 @@
 (require 'org)
 (require 'ox-html)
 (require 'org-jekyll)
+(require 'htmlize)
 (setq org-confirm-babel-evaluate nil
-      org-export-htmlize-output-type 'css
+      org-export-htmlize-output-type 'inline-css
       org-babel-temporary-directory "/tmp/babel" ;; babel directory will be clean up on exit
 )
 (defun add-new-blog (site)
@@ -42,6 +43,7 @@
                    :publishing-directory ,org-publish-dir
                    :site-root ,org-site-root
                    :jekyll-sanitize-permalinks t
+                   :htmlized-source t
                    :publishing-function org-html-publish-to-html
                    :section-numbers nil
                    :headline-levels 4
@@ -53,3 +55,5 @@
 
 ;(org-publish-all t nil)
 ;(org-jekyll-export-project "org-source")
+;
+(server-start)

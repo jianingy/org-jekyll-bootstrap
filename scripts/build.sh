@@ -4,6 +4,8 @@
 # created at : 2013-04-24 11:18:47
 # author     : Jianing Yang <jianingy.yang AT gmail DOT com>
 
+exec 2>&1
+
 root="$(readlink -e $(dirname $0)/..)"
 
 . $root/scripts/activate-local-gem.sh
@@ -30,8 +32,9 @@ while read site source dest; do
 
     if [[ "x$source_ready" == "x1" ]]; then
         echo GENERATING: $site
-	lisp="(progn (add-new-blog \"$site\") (org-jekyll-export-project \"$site\"))"
-	emacs -batch -q -l lisp/publish.el --eval "$lisp"
+	lisp="(progn (add-new-blog \"$site\") (org-jekyll-export-project \"$site\")(kill-emacs 0))"
+	/usr/bin/xvfb-run emacs -q -l lisp/publish.el --eval "$lisp"
+	#emacs -nw -q -l lisp/publish.el --eval "$lisp"
 	pushd site/$site &>/dev/null
 	jekyll --no-server --no-auto $dest
 	popd &>/dev/null
