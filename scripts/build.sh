@@ -8,10 +8,18 @@ exec 2>&1
 
 root="$(readlink -e $(dirname $0)/..)"
 
+# lock
+if ! ln -s ".#$USER@$HOSTNAME:$$" $root/.build.lock; then
+  echo 'another process is running'
+  exit 111
+fi
+
+trap "rm -f $root/.build.lock" EXIT
+
 . $root/scripts/activate-local-gem.sh
 
 mkdir -pv source
-soruce_ready=0
+source_ready=0
 
 while read site source dest; do
     echo BUILDING: $site
@@ -35,7 +43,7 @@ while read site source dest; do
         rm -v site/$site/_posts/*
         echo GENERATING: $site
 	lisp="(progn (add-new-blog \"$site\") (org-jekyll-export-project \"$site\")(kill-emacs 0))"
-	/usr/bin/xvfb-run emacs -q -l lisp/publish.el --eval "$lisp"
+	xvfb-run emacs -q -l lisp/publish.el --eval "$lisp"
 	#emacs -nw -q -l lisp/publish.el --eval "$lisp"
 	pushd site/$site &>/dev/null
 	jekyll --no-server --no-auto $dest
